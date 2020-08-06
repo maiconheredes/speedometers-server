@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\PaymentRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -21,6 +23,8 @@ class Payment
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull(message="O titulo não pode ser nulo.")
+     * @Assert\NotBlank(message="O titulo não pode ser vazio.")
      */
     private $title;
 
@@ -35,7 +39,7 @@ class Payment
     private $value;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", columnDefinition="ENUM('revenue', 'expense')"))
      */
     private $operation;
 
@@ -62,6 +66,11 @@ class Payment
         $this->value = 0;
     }
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -72,7 +81,7 @@ class Payment
         return $this->title;
     }
 
-    public function setTitle(string $title): self
+    public function setTitle(string $title = null): self
     {
         $this->title = $title;
 
@@ -96,7 +105,7 @@ class Payment
         return $this->value;
     }
 
-    public function setValue(string $value): self
+    public function setValue(string $value = null): self
     {
         $this->value = $value;
 
@@ -108,7 +117,7 @@ class Payment
         return $this->operation;
     }
 
-    public function setOperation(string $operation): self
+    public function setOperation(string $operation = null): self
     {
         $this->operation = $operation;
 
@@ -120,7 +129,7 @@ class Payment
         return $this->deleted;
     }
 
-    public function setDeleted(bool $deleted): self
+    public function setDeleted(bool $deleted = null): self
     {
         $this->deleted = $deleted;
 
@@ -135,9 +144,9 @@ class Payment
     /**
      * @ORM\PrePersist
      */
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(): self
     {
-        $this->createdAt = $createdAt;
+        $this->createdAt =  new DateTime();
 
         return $this;
     }
@@ -148,11 +157,12 @@ class Payment
     }
 
     /**
+     * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(): self
     {
-        $this->updatedAt = $updatedAt;
+        $this->updatedAt = new DateTime();
 
         return $this;
     }
