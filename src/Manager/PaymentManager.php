@@ -16,7 +16,7 @@ class PaymentManager extends AbstractManager {
         ]);
     }
 
-    public function find(string $paymentId): ?Payment
+    public function find(?string $paymentId): ?Payment
     {
         return $this->entityManager->getRepository(Payment::class)->findOneBy([
             'deleted' => false,
@@ -26,9 +26,9 @@ class PaymentManager extends AbstractManager {
 
     public function create(Payment $payment): Payment
     {
-        $this->entityManager->beginTransaction();
-
         $this->validateObject($payment);
+
+        $this->entityManager->beginTransaction();
 
         try {
             $this->entityManager->persist($payment);

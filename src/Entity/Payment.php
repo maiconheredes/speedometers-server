@@ -35,7 +35,7 @@ class Payment
     private $description;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", options={"default": 0})
      * @Assert\NotNull(message="O valor não pode ser nulo.")
      * @Assert\NotBlank(message="O valor não pode ser vazio.")
      */

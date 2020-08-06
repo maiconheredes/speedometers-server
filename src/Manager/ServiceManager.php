@@ -16,7 +16,7 @@ class ServiceManager extends AbstractManager {
         ]);
     }
 
-    public function find(string $serviceId): ?Service
+    public function find(?string $serviceId): ?Service
     {
         return $this->entityManager->getRepository(Service::class)->findOneBy([
             'deleted' => false,

@@ -8,7 +8,6 @@ use App\Entity\Service;
 use App\Manager\ServiceManager;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -50,7 +49,7 @@ class ServiceController extends AbstractController
 
         $payment = Payment::create()
             ->setTitle("Serviço para $name")
-            ->setDescription($this->getField('payment.description'))
+            ->setDescription($this->getField('description'))
             ->setOperation(PaymentOperationType::PAYMENT_REVENUE)
             ->setValue($this->getField('payment.value'));
             
@@ -104,7 +103,7 @@ class ServiceController extends AbstractController
     /**
      * @Route("/{serviceId}", name="services_find", methods={"GET"})
      */
-    public function find(Request $request, string $serviceId): JsonResponse
+    public function find(string $serviceId): JsonResponse
     {
         $service = $this->manager->find($serviceId);
 

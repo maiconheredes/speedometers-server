@@ -46,7 +46,11 @@ class AbstractController extends BaseController
 
     protected function convertJsonToArray(Request $request): array
     {
-        return json_decode($request->getContent(), true);
+        $array = json_decode($request->getContent(), true);
+
+        if (is_null($array)) return [];
+
+        return $array;
     }
 
     /**

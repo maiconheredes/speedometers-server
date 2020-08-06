@@ -6,10 +6,7 @@ use App\Entity\Payment;
 use App\Manager\PaymentManager;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @Route("/payments")
@@ -26,7 +23,6 @@ class PaymentController extends AbstractController
     {
         $this->manager = $manager;
     }
-
 
     /**
      * @Route(name="payments_index", methods={"GET"})
@@ -45,13 +41,13 @@ class PaymentController extends AbstractController
     /**
      * @Route(name="payments_create", methods={"POST"})
      */
-    public function create(Request $request): JsonResponse
+    public function create(): JsonResponse
     {
         $payment = Payment::create()
-            ->setTitle($request->get('title'))
-            ->setDescription($request->get('description'))
-            ->setOperation($request->get('operation'))
-            ->setValue($request->get('value'));
+            ->setTitle($this->getField('title'))
+            ->setDescription($this->getField('description'))
+            ->setOperation($this->getField('operation'))
+            ->setValue($this->getField('value'));
 
         try {
             $payment = $this->manager->create($payment);
@@ -65,18 +61,18 @@ class PaymentController extends AbstractController
     /**
      * @Route(name="payments_update", methods={"PUT"})
      */
-    public function update(Request $request): JsonResponse
+    public function update(): JsonResponse
     {
-        $payment = $this->manager->find($request->get('id'));
+        $payment = $this->manager->find($this->getField('id'));
 
         if (!$payment) {
             return $this->responseErrorString('Pagamento não encontrado!', 404);
         }
 
-        $payment->setTitle($request->get('title'))
-            ->setDescription($request->get('description'))
-            ->setOperation($request->get('operation'))
-            ->setValue($request->get('value'));
+        $payment->setTitle($this->getField('title'))
+            ->setDescription($this->getField('description'))
+            ->setOperation($this->getField('operation'))
+            ->setValue($this->getField('value'));
 
         try {
             $payment = $this->manager->create($payment);
@@ -90,7 +86,7 @@ class PaymentController extends AbstractController
     /**
      * @Route("/{paymentId}", name="payments_find", methods={"GET"})
      */
-    public function find(Request $request, string $paymentId): JsonResponse
+    public function find(string $paymentId): JsonResponse
     {
         $payment = $this->manager->find($paymentId);
 

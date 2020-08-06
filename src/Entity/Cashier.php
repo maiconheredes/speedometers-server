@@ -2,11 +2,15 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\CashierRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass=CashierRepository::class)
+ * @ORM\Table(name="cashiers")
  */
 class Cashier
 {
@@ -19,6 +23,8 @@ class Cashier
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull(message="O titulo não pode ser nulo.")
+     * @Assert\NotBlank(message="O titulo não pode ser vazio.")
      */
     private $title;
 
@@ -28,14 +34,30 @@ class Cashier
     private $description;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
      */
     private $createdAt;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
      */
     private $updatedAt;
+
+    /**
+     * @var float
+     */
+    private $totalValue;
+
+
+    public function __construct()
+    {
+        $this->totalValue = 0;
+    }
+
+    public static function create(): self
+    {
+        return new self();
+    }
 
     public function getId(): ?int
     {
@@ -47,7 +69,7 @@ class Cashier
         return $this->title;
     }
 
-    public function setTitle(string $title): self
+    public function setTitle(string $title = null): self
     {
         $this->title = $title;
 
@@ -71,9 +93,12 @@ class Cashier
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAt(): self
     {
-        $this->createdAt = $createdAt;
+        $this->createdAt =  new DateTime();
 
         return $this;
     }
@@ -83,9 +108,25 @@ class Cashier
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setUpdatedAt(): self
     {
-        $this->updatedAt = $updatedAt;
+        $this->updatedAt = new DateTime();
+
+        return $this;
+    }
+
+    public function getTotalValue(): ?float
+    {
+        return $this->totalValue;
+    }
+
+    public function setTotalValue(?float $totalValue): self
+    {
+        $this->totalValue = $totalValue;
 
         return $this;
     }
