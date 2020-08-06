@@ -2,18 +2,17 @@
 
 namespace App\Entity;
 
-use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Repository\PaymentRepository;
+use App\Repository\ServiceRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\HasLifecycleCallbacks()
- * @ORM\Entity(repositoryClass=PaymentRepository::class)
- * @ORM\Table(name="payments")
+ * @ORM\Entity(repositoryClass=ServiceRepository::class)
+ * @ORM\Table(name="services")
  */
-class Payment
+class Service
 {
     /**
      * @ORM\Id()
@@ -24,10 +23,22 @@ class Payment
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotNull(message="O titulo não pode ser nulo.")
-     * @Assert\NotBlank(message="O titulo não pode ser vazio.")
+     * @Assert\NotNull(message="O nome não pode ser nulo.")
+     * @Assert\NotBlank(message="O nome não pode ser vazio.")
      */
-    private $title;
+    private $name;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull(message="O CPF não pode ser nulo.")
+     * @Assert\NotBlank(message="O CPF não pode ser vazio.")
+     */
+    private $cpf;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $address;
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -35,19 +46,11 @@ class Payment
     private $description;
 
     /**
-     * @ORM\Column(type="float")
-     * @Assert\NotNull(message="O valor não pode ser nulo.")
-     * @Assert\NotBlank(message="O valor não pode ser vazio.")
+     * @ORM\OneToOne(targetEntity=Payment::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid()
      */
-    private $value;
-
-    /**
-     * @ORM\Column(type="PaymentOperationType", length=255)
-     * @Assert\NotNull(message="O tipo da operação não pode ser nulo.")
-     * @Assert\NotBlank(message="O tipo da operação não pode ser vazio.")
-     * @DoctrineAssert\Enum(entity="App\DBAL\Types\PaymentOperationType")
-     */
-    private $operation;
+    private $payment;
 
     /**
      * @ORM\Column(type="boolean", options={"default": false})
@@ -68,8 +71,6 @@ class Payment
     public function __construct()
     {
         $this->deleted = false;
-
-        $this->value = 0;
     }
 
     public static function create(): self
@@ -82,14 +83,38 @@ class Payment
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getName(): ?string
     {
-        return $this->title;
+        return $this->name;
     }
 
-    public function setTitle(string $title = null): self
+    public function setName(string $name = null): self
     {
-        $this->title = $title;
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCpf(): ?string
+    {
+        return $this->cpf;
+    }
+
+    public function setCpf(string $cpf = null): self
+    {
+        $this->cpf = $cpf;
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): self
+    {
+        $this->address = $address;
 
         return $this;
     }
@@ -106,26 +131,14 @@ class Payment
         return $this;
     }
 
-    public function getValue(): ?float
+    public function getPayment(): ?Payment
     {
-        return $this->value;
+        return $this->payment;
     }
 
-    public function setValue(string $value = null): self
+    public function setPayment(Payment $payment = null): self
     {
-        $this->value = $value;
-
-        return $this;
-    }
-
-    public function getOperation(): ?string
-    {
-        return $this->operation;
-    }
-
-    public function setOperation(string $operation = null): self
-    {
-        $this->operation = $operation;
+        $this->payment = $payment;
 
         return $this;
     }
@@ -152,7 +165,7 @@ class Payment
      */
     public function setCreatedAt(): self
     {
-        $this->createdAt =  new DateTime();
+        $this->createdAt = new DateTime();
 
         return $this;
     }

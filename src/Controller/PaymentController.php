@@ -35,6 +35,10 @@ class PaymentController extends AbstractController
     {
         $payments = $this->manager->index();
 
+        if (count($payments) <= 0) {
+            return $this->responseErrorString('Pagamentos não encontrados!', 404);
+        }
+
         return $this->json($payments);
     }
 
@@ -46,7 +50,6 @@ class PaymentController extends AbstractController
         $payment = Payment::create()
             ->setTitle($request->get('title'))
             ->setDescription($request->get('description'))
-            ->setDeleted(false)
             ->setOperation($request->get('operation'))
             ->setValue($request->get('value'));
 
@@ -60,6 +63,31 @@ class PaymentController extends AbstractController
     }
 
     /**
+     * @Route(name="payments_update", methods={"PUT"})
+     */
+    public function update(Request $request): JsonResponse
+    {
+        $payment = $this->manager->find($request->get('id'));
+
+        if (!$payment) {
+            return $this->responseErrorString('Pagamento não encontrado!', 404);
+        }
+
+        $payment->setTitle($request->get('title'))
+            ->setDescription($request->get('description'))
+            ->setOperation($request->get('operation'))
+            ->setValue($request->get('value'));
+
+        try {
+            $payment = $this->manager->create($payment);
+        } catch (Exception $exception) {
+            return $this->responseErrorException($exception);
+        }
+
+        return $this->json($payment, 200);
+    }
+
+    /**
      * @Route("/{paymentId}", name="payments_find", methods={"GET"})
      */
     public function find(Request $request, string $paymentId): JsonResponse
@@ -67,7 +95,7 @@ class PaymentController extends AbstractController
         $payment = $this->manager->find($paymentId);
 
         if (!$payment) {
-            return $this->responseErrorString("Pagamento não encontrado!");
+            return $this->responseErrorString('Pagamento não encontrado!', 404);
         }
 
         return $this->json($payment);
@@ -81,11 +109,13 @@ class PaymentController extends AbstractController
         $payment = $this->manager->find($paymentId);
 
         if (!$payment) {
-            return $this->responseErrorString("Pagamento não encontrado!");
+            return $this->responseErrorString('Pagamento não encontrado!', 404);
         }
 
+        $payment->setDeleted(true);
+
         try {
-            $this->manager->remove($payment);
+            $this->manager->create($payment);
         } catch (Exception $exception) {
             return $this->responseErrorException($exception);
         }

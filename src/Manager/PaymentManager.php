@@ -41,18 +41,4 @@ class PaymentManager extends AbstractManager {
             throw $exception;
         }
     }
-
-    public function remove(Payment $payment): void
-    {
-        $this->entityManager->beginTransaction();
-
-        try {
-            $this->entityManager->remove($payment);
-            $this->entityManager->flush();
-            $this->entityManager->commit();
-        } catch (Exception $exception) {
-            $this->entityManager->rollback();
-            throw $exception;
-        }
-    }
 }
