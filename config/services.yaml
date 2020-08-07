@@ -33,16 +33,20 @@ services:
         class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
         public: false
         tags:
-        - { name: 'serializer.normalizer' }
+            - { name: 'serializer.normalizer' }
 
     Symfony\Component\Serializer\Normalizer\DateTimeNormalizer:
         class: Symfony\Component\Serializer\Normalizer\DateTimeNormalizer
         public: false
         tags:
-        - { name: 'serializer.normalizer' }
+            - { name: 'serializer.normalizer' }
 
     Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer:
         class: Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer
         public: false
         tags:
-        - { name: 'serializer.normalizer' }
+            - { name: 'serializer.normalizer' }
+
+    App\EventListener\ExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
