@@ -7,18 +7,37 @@ use Exception;
 
 class CashierManager extends AbstractManager {
     /**
+     * @var PaymentHistoryManager
+     */
+    protected $paymentHistoryManager;
+
+
+    /**
      * @return Cashier[]
      */
     public function index()
     {
-        return $this->entityManager->getRepository(Cashier::class)->findAll();
+        $cashiers = $this->entityManager->getRepository(Cashier::class)->findAll();
+        
+        foreach ($cashiers as $cashier) {
+            $totalValue = $this->paymentHistoryManager->totalRevenueByCashier($cashier);
+            $cashier->setTotalValue(round($totalValue, 2));
+        }
+
+        return $cashiers;
     }
 
     public function find(?string $cashierId): ?Cashier
     {
-        return $this->entityManager->getRepository(Cashier::class)->findOneBy([
+        $cashier = $this->entityManager->getRepository(Cashier::class)->findOneBy([
             'id' => $cashierId,
         ]);
+
+        $totalValue = $this->paymentHistoryManager->totalRevenueByCashier($cashier);
+
+        $cashier->setTotalValue(round($totalValue, 2));
+
+        return $cashier;
     }
 
     public function create(Cashier $cashier): Cashier
@@ -51,5 +70,13 @@ class CashierManager extends AbstractManager {
             $this->entityManager->rollback();
             throw $exception;
         }
+    }
+
+    /**
+     * @required
+     */
+    public function setPaymentHistoryManager(PaymentHistoryManager $paymentHistoryManager)
+    {
+        $this->paymentHistoryManager = $paymentHistoryManager;
     }
 }

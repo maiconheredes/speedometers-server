@@ -2,8 +2,10 @@
 
 namespace App\Manager;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Exception;
 use Symfony\Component\Validator\Validator\ValidatorInterface;;
 
@@ -32,5 +34,13 @@ abstract class AbstractManager {
         foreach ($errors as $error) {
             throw new Exception($error->getMessage());
         }
+    }
+
+    /**
+     * @return ObjectRepository|EntityRepository
+     */
+    protected function getRepository(string $class)
+    {
+        return $this->entityManager->getRepository($class);
     }
 }

@@ -42,6 +42,20 @@ class PaymentHistoryController extends AbstractController
     }
 
     /**
+     * @Route(name="paymentHistories_index", methods={"GET"});
+     */
+    public function index(): JsonResponse
+    {
+        $paymentHistories = $this->manager->index();
+
+        if (count($paymentHistories) <= 0) {
+            return $this->responseErrorString('Histórico de pagamentos não encontrados!', 404);
+        }
+
+        return $this->json($paymentHistories);
+    }
+
+    /**
      * @Route(name="paymentHistories_create", methods={"POST"});
      */
     public function create(): JsonResponse
@@ -60,7 +74,8 @@ class PaymentHistoryController extends AbstractController
         $paymentHistory = PaymentHistory::create()
             ->setPayment($payment)
             ->setCashier($cashier)
-            ->setValue($payment->getValue());
+            ->setValue($payment->getValue())
+            ->setOperation($payment->getOperation());
 
         try {
             $paymentHistory = $this->manager->create($paymentHistory);
@@ -69,5 +84,19 @@ class PaymentHistoryController extends AbstractController
         }
 
         return $this->json($paymentHistory, 201);
+    }
+
+    /**
+     * @Route("/{paymentHistoryId}", name="paymentHistories_find", methods={"GET"})
+     */
+    public function find(string $paymentHistoryId): JsonResponse
+    {
+        $paymentHistory = $this->manager->find($paymentHistoryId);
+
+        if (!$paymentHistory) {
+            return $this->responseErrorString('Histório de pagamento não encontrado!', 404);
+        }
+
+        return $this->json($paymentHistory);
     }
 }

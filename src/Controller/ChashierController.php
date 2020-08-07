@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Cashier;
 use App\Manager\CashierManager;
+use App\Manager\PaymentHistoryManager;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,10 +19,18 @@ class ChashierController extends AbstractController
      */
     private $manager;
 
+    /**
+     * @var PaymentHistoryManager
+     */
+    private $paymentHistoryManager;
 
-    public function __construct(CashierManager $manager)
-    {
+
+    public function __construct(
+        CashierManager $manager, 
+        PaymentHistoryManager $paymentHistoryManager
+    ) {
         $this->manager = $manager;
+        $this->paymentHistoryManager = $paymentHistoryManager;
     }
 
 
@@ -81,7 +90,7 @@ class ChashierController extends AbstractController
     }
 
     /**
-     * @Route("/{cashierId}", name="cashier_find", methods={"GET"})
+     * @Route("/{cashierId}", name="cashiers_find", methods={"GET"})
      */
     public function find(string $cashierId): JsonResponse
     {

@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Payment;
+use App\Entity\PaymentHistory;
 use Exception;
 
 class PaymentManager extends AbstractManager {
