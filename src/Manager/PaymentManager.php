@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\DBAL\Types\PaymentOperationType;
 use App\Entity\Payment;
 use App\Entity\PaymentHistory;
 use Exception;
@@ -22,6 +23,17 @@ class PaymentManager extends AbstractManager {
         return $this->entityManager->getRepository(Payment::class)->findOneBy([
             'deleted' => false,
             'id' => $paymentId,
+        ]);
+    }
+
+    /**
+     * @return Payment[]
+     */
+    public function findPayments(string $operationType = PaymentOperationType::PAYMENT_REVENUE)
+    {
+        return $this->entityManager->getRepository(Payment::class)->findBy([
+            'deleted' => false,
+            'operation' => $operationType,
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DBAL\Types\PaymentOperationType;
 use App\Entity\Payment;
 use App\Manager\PaymentManager;
 use Exception;
@@ -81,6 +82,34 @@ class PaymentController extends AbstractController
         }
 
         return $this->json($payment, 200);
+    }
+
+    /**
+     * @Route("/expense", name="payments_find_expense", methods={"GET"})
+     */
+    public function findExpense(): JsonResponse
+    {
+        $payments = $this->manager->findPayments(PaymentOperationType::PAYMENT_EXPENSE);
+
+        if (count($payments) <= 0) {
+            return $this->responseErrorString('Pagamentos não encontrados!', 404);
+        }
+
+        return $this->json($payments);
+    }
+
+    /**
+     * @Route("/revenue", name="payments_find_revenue", methods={"GET"})
+     */
+    public function findRevenue(): JsonResponse
+    {
+        $payments = $this->manager->findPayments(PaymentOperationType::PAYMENT_REVENUE);
+
+        if (count($payments) <= 0) {
+            return $this->responseErrorString('Pagamentos não encontrados!', 404);
+        }
+
+        return $this->json($payments);
     }
 
     /**
