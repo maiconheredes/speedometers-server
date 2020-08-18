@@ -47,6 +47,7 @@ services:
         tags:
             - { name: 'serializer.normalizer' }
 
-    #App\EventListener\ExceptionListener:
-    #    tags:
-    #        - { name: kernel.event_listener, event: kernel.exception }
+    App\EventListener\ExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+            
