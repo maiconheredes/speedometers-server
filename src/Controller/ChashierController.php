@@ -120,6 +120,6 @@ class ChashierController extends AbstractController
             return $this->responseErrorException($exception);
         }
 
-        return $this->json(null);
+        return $this->json(true);
     }
 }
