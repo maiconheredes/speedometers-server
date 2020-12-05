@@ -48,7 +48,9 @@ class PaymentController extends AbstractController
             ->setTitle($this->getField('title'))
             ->setDescription($this->getField('description'))
             ->setOperation($this->getField('operation'))
-            ->setValue($this->getField('value'));
+            ->setValue($this->getField('value'))
+            ->setInstallments($this->getField('installments'))
+            ->setLastPayment(null);
 
         try {
             $payment = $this->manager->create($payment);
@@ -73,7 +75,8 @@ class PaymentController extends AbstractController
         $payment->setTitle($this->getField('title'))
             ->setDescription($this->getField('description'))
             ->setOperation($this->getField('operation'))
-            ->setValue($this->getField('value'));
+            ->setValue($this->getField('value'))
+            ->setInstallments($this->getField('installments'));
 
         try {
             $payment = $this->manager->create($payment);

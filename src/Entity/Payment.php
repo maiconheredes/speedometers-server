@@ -42,6 +42,20 @@ class Payment
     private $value;
 
     /**
+     * @ORM\Column(type="integer", options={"default": 0})
+     * @Assert\NotNull(message="A parcela não pode ser nulo.")
+     * @Assert\NotBlank(message="A parcela não pode ser vazio.")
+     */
+    private $installment;
+
+    /**
+     * @ORM\Column(type="integer", options={"default": 1})
+     * @Assert\NotNull(message="As parcelas não pode ser nulo.")
+     * @Assert\NotBlank(message="As parcelas não pode ser vazio.")
+     */
+    private $installments;
+
+    /**
      * @ORM\Column(type="PaymentOperationType", length=255)
      * @Assert\NotNull(message="O tipo da operação não pode ser nulo.")
      * @Assert\NotBlank(message="O tipo da operação não pode ser vazio.")
@@ -64,12 +78,19 @@ class Payment
      */
     private $updatedAt;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true, options={"default": "CURRENT_TIMESTAMP"})
+     */
+    private $lastPayment;
+
 
     public function __construct()
     {
         $this->deleted = false;
 
         $this->value = 0;
+        $this->installment = 0;
+        $this->installments = 1;
     }
 
     public static function create(): self
@@ -118,6 +139,30 @@ class Payment
         return $this;
     }
 
+    public function getInstallment(): ?float
+    {
+        return $this->installment;
+    }
+
+    public function setInstallment(string $installment = null): self
+    {
+        $this->installment = $installment;
+
+        return $this;
+    }
+
+    public function getInstallments(): ?float
+    {
+        return $this->installments;
+    }
+
+    public function setInstallments(string $installments = null): self
+    {
+        $this->installments = $installments;
+
+        return $this;
+    }
+
     public function getOperation(): ?string
     {
         return $this->operation;
@@ -138,6 +183,18 @@ class Payment
     public function setDeleted(bool $deleted = null): self
     {
         $this->deleted = $deleted;
+
+        return $this;
+    }
+
+    public function getLastPayment(): ?\DateTimeInterface
+    {
+        return $this->lastPayment;
+    }
+
+    public function setLastPayment(?\DateTimeInterface $lastPayment): self
+    {
+        $this->lastPayment = $lastPayment;
 
         return $this;
     }
