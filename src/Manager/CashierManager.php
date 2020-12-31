@@ -20,8 +20,9 @@ class CashierManager extends AbstractManager {
         $cashiers = $this->entityManager->getRepository(Cashier::class)->findAll();
         
         foreach ($cashiers as $cashier) {
-            $totalValue = $this->paymentHistoryManager->totalRevenueByCashier($cashier);
-            $cashier->setTotalValue(round($totalValue, 2));
+            $totalRevenueValue = $this->paymentHistoryManager->totalRevenueByCashier($cashier);
+            $totalExpenseValue = $this->paymentHistoryManager->totalExpenseByCashier($cashier);
+            $cashier->setTotalValue(round(($totalRevenueValue - $totalExpenseValue), 2));
         }
 
         return $cashiers;
@@ -33,9 +34,10 @@ class CashierManager extends AbstractManager {
             'id' => $cashierId,
         ]);
 
-        $totalValue = $this->paymentHistoryManager->totalRevenueByCashier($cashier);
+        $totalRevenueValue = $this->paymentHistoryManager->totalRevenueByCashier($cashier);
+        $totalExpenseValue = $this->paymentHistoryManager->totalExpenseByCashier($cashier);
 
-        $cashier->setTotalValue(round($totalValue, 2));
+        $cashier->setTotalValue(round(($totalRevenueValue - $totalExpenseValue), 2));
 
         return $cashier;
     }
