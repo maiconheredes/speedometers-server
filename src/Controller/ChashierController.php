@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Cashier;
 use App\Manager\CashierManager;
 use App\Manager\PaymentHistoryManager;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -116,6 +117,8 @@ class ChashierController extends AbstractController
 
         try {
             $this->manager->remove($cashier);
+        } catch (ForeignKeyConstraintViolationException $exception) {
+            return $this->responseErrorString('Não é possível remover este caixa, existem pagamentos vinculados a ele.');
         } catch (Exception $exception) {
             return $this->responseErrorException($exception);
         }

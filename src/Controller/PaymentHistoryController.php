@@ -6,6 +6,7 @@ use App\Entity\PaymentHistory;
 use App\Manager\CashierManager;
 use App\Manager\PaymentHistoryManager;
 use App\Manager\PaymentManager;
+use DateTime;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -71,11 +72,20 @@ class PaymentHistoryController extends AbstractController
             return $this->responseErrorString('Caixa não encontrado!', 404);
         }
 
+        if ($payment->getInstallments() == $payment->getInstallment()) {
+            return $this->responseErrorString('Pagamento já foi totalmente faturado!', 202);
+        }
+
+        $payment
+            ->setLastPayment(new DateTime())
+            ->setInstallment($payment->getInstallment() + 1);
+
         $paymentHistory = PaymentHistory::create()
             ->setPayment($payment)
             ->setCashier($cashier)
             ->setValue($payment->getValue())
-            ->setOperation($payment->getOperation());
+            ->setOperation($payment->getOperation())
+            ->setPaymentAt(new DateTime());
 
         try {
             $paymentHistory = $this->manager->create($paymentHistory);
