@@ -41,6 +41,11 @@ class User implements UserInterface
     private $password;
     
 
+    public static function create(): self
+    {
+        return new self();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;
